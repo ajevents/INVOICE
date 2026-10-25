@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Invoice Studio</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#f3f2ef;--panel:#fff;--ink:#1b1b1b;--mute:#6b6b6b;--line:#dcdad5;--btn:#1b1b1b;--btnt:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141414;--panel:#1e1e1e;--ink:#eee;--mute:#9a9a9a;--line:#333;--btn:#eee;--btnt:#141414;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141414;--panel:#1e1e1e;--ink:#eee;--mute:#9a9a9a;--line:#333;--btn:#eee;--btnt:#141414;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,sans-serif}
+.app{display:grid;grid-template-columns:380px 1fr;min-height:100vh}
+aside{background:var(--panel);border-right:1px solid var(--line);padding:16px;overflow-y:auto;max-height:100vh;position:sticky;top:0}
+aside h1{font-size:18px;margin:0 0 4px}aside p{margin:0 0 12px;color:var(--mute)}
+details{border-top:1px solid var(--line);padding:8px 0}summary{cursor:pointer;font-weight:600;padding:6px 0}
+label{display:block;margin:8px 0 2px;color:var(--mute);font-size:12px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px}
+input[type=color]{padding:2px;height:36px}input[type=checkbox]{width:auto}input[type=range]{padding:0}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid #2f6fed;outline-offset:1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chk{display:flex;gap:8px;align-items:center;margin:8px 0;color:var(--ink);font-size:13px}
+button{font:inherit;cursor:pointer;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 12px}
+button.p{background:var(--btn);color:var(--btnt);border-color:var(--btn)}
+.item{border:1px solid var(--line);border-radius:6px;padding:8px;margin:8px 0}
+.item .row3{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:6px}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}.sw{width:56px;height:36px;border-radius:6px;border:2px solid var(--line);font-size:10px;display:flex;align-items:end;justify-content:center;padding:2px}
+.sw.on{border-color:#2f6fed}
+main{padding:24px;overflow:auto}
+.bar{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;max-width:794px;margin:0 auto 12px;padding:0 12px}
+.paper{position:relative;width:794px;max-width:none;margin:0 auto;min-height:1123px;padding:44px 48px;background:var(--pp);color:var(--pi);box-shadow:0 2px 20px rgba(0,0,0,.18);overflow:hidden}
+.paper .bgi{position:absolute;inset:0;background-size:cover;background-position:center;opacity:var(--bgo)}
+.paper>*:not(.bgi){position:relative}
+.paper hr{border:0;border-top:1px solid var(--pl);margin:20px 0}
+.top{display:flex;justify-content:space-between;gap:24px}
+.top img.logo{max-height:70px;max-width:200px;display:block;margin-bottom:10px}
+.nm{font-size:22px;letter-spacing:.06em;text-transform:uppercase}
+.sub{opacity:.75;margin-top:4px}
+.ttl{font-size:46px;letter-spacing:.3em;color:var(--ac);font-weight:500;text-align:right;margin:0}
+.meta{margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:4px 24px;font-size:13px}.meta b{font-weight:600}.meta span{text-align:right}
+.small{font-size:12px;opacity:.85;white-space:pre-line}
+h3{margin:0 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+table{width:100%;border-collapse:collapse;margin-top:4px}
+th{background:var(--ac);color:var(--ah);padding:10px;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+td{border:1px solid var(--pl);padding:10px;vertical-align:top}.r{text-align:right}.c{text-align:center}
+.tot{margin-left:auto;width:55%;margin-top:0}.tot td{padding:8px 10px}.tot tr:last-child td{font-size:18px;font-weight:700}
+.pay{display:grid;grid-template-columns:110px 1fr;gap:2px 8px;font-size:12px}
+.qr{display:flex;gap:14px;align-items:center;border:1px solid var(--pl);padding:12px;margin-top:14px;max-width:340px}
+.qr img,.qr .ph{width:84px;height:84px;object-fit:contain;border:1px solid var(--pl);display:flex;align-items:center;justify-content:center;font-size:10px}
+.ty{text-align:center;margin-top:24px;font-size:26px;font-style:italic;opacity:.85}
+@media (max-width:860px){
+ .app{grid-template-columns:1fr}aside{position:static;max-height:none;border-right:0}
+ body.pv aside{display:none}body:not(.pv) main{display:none}
+ main{padding:12px 0;overflow-x:hidden}
+}
+@media print{aside,.bar,.tabs{display:none!important}.app{display:block}main{display:block!important;padding:0}body{background:#fff}.paper{box-shadow:none;zoom:1!important;margin:0;width:210mm;min-height:296mm;padding:12mm 13mm;-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{size:A4;margin:0}}
+.tabs{display:none;position:fixed;left:0;right:0;bottom:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:var(--panel);border-top:1px solid var(--line);gap:8px;z-index:5}
+.tabs button{flex:1}
+@media (max-width:860px){.tabs{display:flex}body{padding-bottom:64px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside id="ed"></aside>
+<main>
+ <div class="bar"><button id="rst">Reset</button><button id="th">Dark / light</button><button id="prt">Print</button><button class="p" id="pdf">Download A4 PDF</button></div>
+ <div class="paper" id="paper"></div>
+</main>
+</div>
+<div class="tabs"><button id="t1">Edit</button><button id="t2" class="p">Preview</button></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+var THEMES={Classic:["#ffffff","#111111","#d6d6d6"],Ivory:["#faf6ec","#2b2418","#d9cfb8"],Midnight:["#16181d","#ecebe7","#383c45"],Blush:["#fdf1f0","#3a2323","#ecc9c5"],Sage:["#eef3ec","#1f2d22","#c3d3c0"]};
+var CUR={"$":"$","₹":"₹","€":"€","£":"£","AED":"AED ","SAR":"SAR "};
+var FONTS={Inter:"Inter,system-ui,sans-serif","Playfair Display":"'Playfair Display',Georgia,serif","Space Grotesk":"'Space Grotesk',system-ui,sans-serif",Georgia:"Georgia,serif",Mono:"ui-monospace,Menlo,monospace"};
+var D=function(){return{name:"Your Name",biz:"Event Company Name",prof:"Event planning & management",addr:"Address line",phone:"Phone number",email:"Email address",web:"Website",no:"INV-2026-001",date:new Date().toISOString().slice(0,10),due:new Date(Date.now()+12096e5).toISOString().slice(0,10),cur:"₹",bill:"Client name\nClient address",tax:0,disc:0,notes:"Thank you for your business!\nPayment is due within 14 days from the invoice date.",upi:"yourname@upi",bank:"Bank name",accn:"Account holder",accno:"Account number",ifsc:"IFSC code",thanks:"Thank you!",items:[{d:"Wedding décor and stage setup",q:1,p:25000}],logo:"",qr:"",bg:"",bgo:.15,theme:"Classic",accent:"#111111",font:"Inter",sh:{bill:1,notes:1,pay:1,qr:1,tax:1,disc:1}}};
+var s=D();
+try{var sv=localStorage.getItem("inv");if(sv)s=Object.assign(D(),JSON.parse(sv))}catch(e){}
+var $=function(i){return document.getElementById(i)};
+function esc(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function F(k,l,t){t=t||"text";return "<label>"+l+"</label>"+(t=="area"?'<textarea rows="3" data-k="'+k+'">'+esc(s[k])+"</textarea>":'<input type="'+t+'" data-k="'+k+'" value="'+esc(s[k])+'"'+(t=="number"?' step="any" min="0"':"")+">")}
+function C(k,l){return '<label class="chk"><input type="checkbox" data-s="'+k+'"'+(s.sh[k]?" checked":"")+"> "+l+"</label>"}
+function sel(k,l,o){return "<label>"+l+'</label><select data-k="'+k+'">'+o.map(function(x){return "<option"+(x==s[k]?" selected":"")+">"+esc(x)+"</option>"}).join("")+"</select>"}
+function items(){return s.items.map(function(it,i){return '<div class="item"><input data-i="'+i+'" data-j="d" placeholder="Item description" value="'+esc(it.d)+'"><div class="row3"><input type="number" min="0" data-i="'+i+'" data-j="q" placeholder="Qty" value="'+it.q+'"><input type="number" min="0" step="any" data-i="'+i+'" data-j="p" placeholder="Unit price" value="'+it.p+'"><button data-del="'+i+'" aria-label="Remove item">Remove</button></div></div>'}).join("")}
+function getT(){try{return JSON.parse(localStorage.getItem("invT"))||[]}catch(e){return[]}}
+function putT(a){try{localStorage.setItem("invT",JSON.stringify(a));return 1}catch(e){return 0}}
+function tpls(){var a=getT();return a.length?a.map(function(x,i){return '<div class="item"><b>'+esc(x.n)+'</b><div class="row3" style="grid-template-columns:1fr 1fr"><button class="p" data-tl="'+i+'">Use</button><button data-td="'+i+'">Delete</button></div></div>'}).join(""):'<p>No templates saved yet.</p>'}
+function fresh(){var d=D();s.date=d.date;s.due=d.due}
+function build(){
+$("ed").innerHTML='<h1>Invoice Studio</h1><p>Edit on the left, see the invoice update live. Your work is saved on this device.</p>'+
+'<details open><summary>Templates</summary><p>Save your business, look and payment details once, then reuse them anytime.</p><label>Template name</label><input id="tn" placeholder="e.g. Wedding events"><button class="p" id="ts" style="margin-top:8px">Save as template</button> <button id="nw" style="margin-top:8px">New invoice, keep my details</button><div id="tl">'+tpls()+'</div></details>'+
+'<details open><summary>Your business</summary><label>Logo (PNG, JPG or SVG)</label><input type="file" accept="image/*" data-f="logo"><button id="xl">Remove logo</button>'+F("name","Your name")+F("biz","Business name")+F("prof","Service")+F("addr","Address")+F("phone","Phone")+F("email","Email")+F("web","Website")+"</details>"+
+'<details><summary>Invoice details</summary>'+F("no","Invoice number")+'<div class="row"><div>'+F("date","Invoice date","date")+"</div><div>"+F("due","Due date","date")+"</div></div>"+sel("cur","Currency",Object.keys(CUR))+'<div class="row"><div>'+F("tax","Tax %","number")+"</div><div>"+F("disc","Discount (amount)","number")+"</div></div>"+C("tax","Show tax row")+C("disc","Show discount row")+"</details>"+
+'<details><summary>Bill to</summary>'+C("bill","Show bill-to section")+F("bill","Client details","area")+"</details>"+
+'<details><summary>Items</summary><div id="its">'+items()+'</div><button id="add" class="p">Add item</button></details>'+
+'<details><summary>Notes and payment</summary>'+C("notes","Show notes")+F("notes","Notes","area")+C("pay","Show payment details")+F("upi","UPI ID")+F("bank","Bank name")+F("accn","Account name")+F("accno","Account number")+F("ifsc","IFSC code")+C("qr","Show UPI QR box")+'<label>UPI QR image</label><input type="file" accept="image/*" data-f="qr">'+F("thanks","Closing message")+"</details>"+
+'<details open><summary>Look and theme</summary><label>Theme, or choose your own background image</label><div class="swatches">'+Object.keys(THEMES).map(function(n){var t=THEMES[n];return '<button class="sw'+(s.theme==n?" on":"")+'" data-th="'+n+'" style="background:'+t[0]+";color:"+t[1]+'">'+n+"</button>"}).join("")+'<button class="sw" id="cf" style="width:auto;padding:2px 10px;align-items:center;font-size:12px">Choose file</button><input type="file" id="cfi" accept="image/*" data-f="bg" hidden></div>'+
+'<label>Accent colour (title and table header)</label><input type="color" data-k="accent" value="'+s.accent+'">'+sel("font","Font",Object.keys(FONTS))+
+'<label>Background image</label><input type="file" accept="image/*" data-f="bg"><button id="xb">Remove background</button><label>Background strength</label><input type="range" min="0" max="1" step="0.05" data-k="bgo" value="'+s.bgo+'"></details>'}
+function m(n){n=Number(n)||0;return CUR[s.cur]+n.toLocaleString(s.cur=="₹"?"en-IN":"en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
+function lum(h){var n=parseInt(h.slice(1),16),r=n>>16,g=n>>8&255,b=n&255;return(r*299+g*587+b*114)/1000}
+function draw(){
+var t=THEMES[s.theme]||THEMES.Classic,p=$("paper"),sub=0;
+s.items.forEach(function(i){sub+=(Number(i.q)||0)*(Number(i.p)||0)});
+var dc=Math.min(Number(s.disc)||0,sub),tx=(sub-dc)*(Number(s.tax)||0)/100,tot=sub-dc+tx;
+p.style.cssText="--pp:"+t[0]+";--pi:"+t[1]+";--pl:"+t[2]+";--ac:"+s.accent+";--ah:"+(lum(s.accent)>150?"#111":"#fff")+";--bgo:"+s.bgo+";font-family:"+FONTS[s.font];
+var h='<div class="bgi" style="background-image:'+(s.bg?"url("+s.bg+")":"none")+'"></div>';
+h+='<div class="top"><div>'+(s.logo?'<img class="logo" src="'+s.logo+'" alt="Logo">':"")+'<div class="nm">'+esc(s.name)+'</div><div class="sub">'+esc(s.biz)+'</div><div class="sub small">'+esc(s.prof)+'</div><div class="small" style="margin-top:14px">'+[s.addr,s.phone,s.email,s.web].map(esc).join("<br>")+'</div></div>';
+h+='<div style="min-width:260px"><h2 class="ttl">INVOICE</h2><hr style="margin:10px 0"><div class="meta"><b>Invoice No.</b><span>'+esc(s.no)+"</span><b>Invoice Date</b><span>"+esc(s.date)+"</span><b>Due Date</b><span>"+esc(s.due)+"</span><b>Currency</b><span>"+esc(s.cur)+"</span></div></div></div><hr>";
+if(s.sh.bill)h+='<h3>Bill to</h3><div class="small">'+esc(s.bill)+"</div><hr>";
+h+='<table><tr><th>S.No.</th><th style="text-align:left">Item description</th><th>Qty</th><th>Unit price</th><th>Total</th></tr>'+s.items.map(function(i,n){return '<tr><td class="c">'+(n+1)+"</td><td>"+esc(i.d)+'</td><td class="c">'+esc(i.q)+'</td><td class="r">'+m(i.p)+'</td><td class="r">'+m((i.q||0)*(i.p||0))+"</td></tr>"}).join("")+"</table>";
+h+='<table class="tot"><tr><td>Subtotal</td><td class="r">'+m(sub)+"</td></tr>"+(s.sh.disc?'<tr><td>Discount</td><td class="r">− '+m(dc)+"</td></tr>":"")+(s.sh.tax?"<tr><td>Tax ("+(Number(s.tax)||0)+'%)</td><td class="r">'+m(tx)+"</td></tr>":"")+'<tr><td>Total</td><td class="r">'+m(tot)+"</td></tr></table>";
+if(s.sh.notes)h+='<hr><h3>Notes</h3><div class="small">'+esc(s.notes)+"</div>";
+if(s.sh.pay){h+='<hr><h3>Payment details</h3><div class="pay"><b>UPI ID</b><span>'+esc(s.upi)+"</span><b>Bank name</b><span>"+esc(s.bank)+"</span><b>Account name</b><span>"+esc(s.accn)+"</span><b>Account No.</b><span>"+esc(s.accno)+"</span><b>IFSC code</b><span>"+esc(s.ifsc)+"</span></div>";
+if(s.sh.qr)h+='<div class="qr">'+(s.qr?'<img src="'+s.qr+'" alt="UPI QR code">':'<div class="ph">UPI QR</div>')+'<div class="small"><b>Scan and pay with any UPI app</b><br>'+esc(s.upi)+"</div></div>"}
+h+='<hr><div class="small c" style="text-align:center">If you have any questions, feel free to reach out.</div><div class="ty">'+esc(s.thanks)+"</div>";
+p.innerHTML=h;fit();save()}
+function fit(){var mw=document.querySelector("main").clientWidth||innerWidth;$("paper").style.zoom=Math.min(1,(mw-(innerWidth<=860?16:48))/794)}
+addEventListener("resize",fit);
+function save(){try{localStorage.setItem("inv",JSON.stringify(s))}catch(e){}}
+document.addEventListener("input",function(e){var t=e.target,k=t.dataset.k;
+if(k){s[k]=t.type=="range"?Number(t.value):t.value;draw()}
+else if(t.dataset.i!=null){s.items[t.dataset.i][t.dataset.j]=t.dataset.j=="d"?t.value:t.value;draw()}});
+document.addEventListener("change",function(e){var t=e.target;
+if(t.dataset.s){s.sh[t.dataset.s]=t.checked?1:0;draw()}
+if(t.dataset.f&&t.files[0]){var r=new FileReader(),k=t.dataset.f;r.onload=function(){s[k]=r.result;draw()};r.readAsDataURL(t.files[0])}});
+document.addEventListener("click",function(e){var t=e.target;
+if(t.dataset.th){s.theme=t.dataset.th;s.accent=THEMES[s.theme][1];build();draw()}
+if(t.dataset.del!=null&&s.items.length>1){s.items.splice(t.dataset.del,1);$("its").innerHTML=items();draw()}
+if(t.id=="add"){s.items.push({d:"",q:1,p:0});$("its").innerHTML=items();draw()}
+if(t.id=="cf")$("cfi").click();if(t.id=="xl"){s.logo="";draw()}if(t.id=="xb"){s.bg="";draw()}
+if(t.id=="prt")window.print();
+if(t.id=="ts"){var nm=$("tn").value.trim()||"Template "+(getT().length+1),a=getT().filter(function(x){return x.n!=nm});a.push({n:nm,d:JSON.parse(JSON.stringify(s))});if(putT(a)){$("tl").innerHTML=tpls();$("tn").value=""}else alert("Could not save the template. The logo or images may be too large for this device.")}
+if(t.dataset.tl!=null){var x=getT()[t.dataset.tl];if(x){s=Object.assign(D(),x.d);fresh();build();draw()}}
+if(t.dataset.td!=null){var b=getT();b.splice(t.dataset.td,1);putT(b);$("tl").innerHTML=tpls()}
+if(t.id=="nw"){s.items=[{d:"",q:1,p:0}];s.bill="";s.disc=0;s.no=s.no.replace(/(\d+)(?!.*\d)/,function(z){return String(+z+1).padStart(z.length,"0")});fresh();build();draw()}
+if(t.id=="rst"&&confirm("Reset the invoice to the starting template?")){s=D();build();draw()}
+if(t.id=="th"){var r=document.documentElement,d=r.dataset.theme=="dark"||(!r.dataset.theme&&matchMedia("(prefers-color-scheme:dark)").matches);r.dataset.theme=d?"light":"dark"}
+if(t.id=="t1")document.body.classList.remove("pv");
+if(t.id=="t2"){document.body.classList.add("pv");fit()}
+if(t.id=="pdf"){if(!window.html2canvas||!window.jspdf)alert("PDF tools could not load. Check your connection or use Print.");else{var pp=$("paper");pp.style.zoom=1;html2canvas(pp,{scale:2,useCORS:true}).then(function(c){var d=new window.jspdf.jsPDF({unit:"mm",format:"a4"}),h=c.height*210/c.width,img=c.toDataURL("image/jpeg",.95);for(var y=0;y<h-1;y+=297){if(y)d.addPage();d.addImage(img,"JPEG",0,-y,210,h)}d.save("invoice-"+(s.no||"draft")+".pdf");fit()}).catch(function(){fit();alert("Could not create the PDF. Try Print instead.")})}}});
+build();draw();
+</script>
+</body>
+</html>
